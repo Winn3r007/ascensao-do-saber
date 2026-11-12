@@ -25,16 +25,16 @@ jobs:
       - name: Extract application
         run: |
           unzip -q Ascensao-do-Saber-PWA-GitHub.zip -d source
-          test -f source/ascensao-do-saber/package.json
+          test -f source/ascensao-do-saber/ascensao-do-saber/package.json
       - name: Install and build
-        working-directory: source/ascensao-do-saber
+        working-directory: source/ascensao-do-saber/ascensao-do-saber
         run: |
           npm ci
           npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: source/ascensao-do-saber/dist
+          path: source/ascensao-do-saber/ascensao-do-saber/dist
   deploy:
     environment:
       name: github-pages
