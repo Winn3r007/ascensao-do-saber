@@ -20,20 +20,25 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.19.0
+          node-version: 22
       - name: Extract application
         run: |
           unzip -q Ascensao-do-Saber-PWA-GitHub.zip -d source
-          test -f source/ascensao-do-saber/ascensao-do-saber/package.json
+          APP_PACKAGE="$(find source -name package.json -not -path '*/node_modules/*' -print -quit)"
+          test -n "$APP_PACKAGE"
+          APP_DIR="$(dirname "$APP_PACKAGE")"
+          echo "APP_DIR=$APP_DIR" >> "$GITHUB_ENV"
       - name: Install and build
-        working-directory: source/ascensao-do-saber/ascensao-do-saber
         run: |
+          cd "$APP_DIR"
           npm ci
           npm run build
+          echo "dist_path=$APP_DIR/dist" >> "$GITHUB_OUTPUT"
+        id: build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: source/ascensao-do-saber/ascensao-do-saber/dist
+          path: ${{ steps.build.outputs.dist_path }}
   deploy:
     environment:
       name: github-pages
