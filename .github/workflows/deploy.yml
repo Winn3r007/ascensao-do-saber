@@ -4,7 +4,6 @@ on:
     branches: [main]
     paths:
       - 'Ascensao-do-Saber-PWA-GitHub.zip'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -20,7 +19,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
       - name: Extract application
         run: |
           unzip -q Ascensao-do-Saber-PWA-GitHub.zip -d source
@@ -29,12 +30,12 @@ jobs:
           APP_DIR="$(dirname "$APP_PACKAGE")"
           echo "APP_DIR=$APP_DIR" >> "$GITHUB_ENV"
       - name: Install and build
+        id: build
         run: |
           cd "$APP_DIR"
           npm ci
           npm run build
           echo "dist_path=$APP_DIR/dist" >> "$GITHUB_OUTPUT"
-        id: build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
